@@ -96,7 +96,7 @@ If this section is empty: Either the concept was perfect, or you haven't validat
 <!-- The folder/file convention that this pattern produces lives in design.md → Section 1. -->
 <!-- Reference it here so readers know where to look. -->
 
-> See [`./design.md`](./design.md) → **Section 1** for the folder/file convention this pattern enforces.
+> See [`docs/design.md`](./design.md) → **Section 1** for the folder/file convention this pattern enforces.
 
 ---
 
@@ -104,7 +104,7 @@ If this section is empty: Either the concept was perfect, or you haven't validat
 <!-- have been moved to design.md, which covers HOW the system is built internally.     -->
 <!-- architecture.md stays focused on WHY and WHAT: decisions, principles, constraints. -->
 
-> See [`./design.md`](./design.md) for modules, roles, flows, data model, contracts, and repository structure.
+> See [`docs/design.md`](./design.md) for modules, roles, flows, data model, contracts, and repository structure.
 
 ---
 
