@@ -2,27 +2,29 @@
 
 ## Document List
 
-| Document          | Answer                   | Who wrote it                                |
-| ----------------- | ------------------------ | ------------------------------------------- |
-| `concept.md`      | What and why             | Human (with AI assistance)                  |
-| `architecture.md` | How                      | AI based on concept.md                      |
-| `task.md`         | What to do next          | AI based on architecture.md                 |
-| `ADR-XXX.md`      | Why this decision        | AI or human when a major decision arises    |
-| `README.md`       | How to enter the project | AI at the end, when everything above exists |
+| Document          | Answer                          | Who writes it                               |
+| ----------------- | ------------------------------- | ------------------------------------------- |
+| `concept.md`      | What and why                    | Human (with AI assistance)                  |
+| `architecture.md` | Style, stack, principles, risks | AI based on concept.md                      |
+| `design.md`       | Modules, flows, data, contracts | AI based on architecture.md                 |
+| `task.md`         | What to do next                 | AI based on design.md                       |
+| `ADR-XXX.md`      | Why this decision               | AI or human when a major decision arises    |
+| `README.md`       | How to enter the project        | AI at the end, when everything above exists |
 
 ## Workflow
 
 ```
-1. idea rough → concept.md (human completes the template)
-2. concept.md → architecture.md (AI generates)
-3. architecture.md → task.md (AI generates)
-4. architecture.md → ADR-XXXX.md (AI generates one per important decision)
-5. all of the above → README.md (AI generates last)
+1. idea rough → concept.md         (human completes the template)
+2. concept.md → architecture.md    (AI generates — style, stack, principles, decisions)
+3. architecture.md → design.md     (AI generates — modules, flows, data model, contracts)
+4. design.md → task.md             (AI generates)
+5. architecture.md → ADR-XXXX.md   (AI generates one per important decision)
+6. all of the above → README.md    (AI generates last)
 ```
 
 **Key rule:** Do not proceed to the next step if the previous one has important empty sections.
 
-Specifically: Do not generate `architecture.md` without a clear understanding of the system stack and actors.
+Specifically: Do not generate `architecture.md` without a clear understanding of the system stack and actors. Do not generate `design.md` without a defined architectural style and module boundaries.
 
 ---
 
@@ -55,21 +57,48 @@ Rules:
 
 - A complete `concept.md` file (especially actors, roles, and constraints)
 - A defined (or at least preferred) technology stack
+- The `adr_mold.md` template
 
-`````
-Using this concept.md file and the specified stack, generate an architecture.md file using the provided template.
+```
+Using this concept.md and the specified stack, generate an architecture.md using the provided template.
+For every non-obvious decision found, also generate one ADR using the adr_mold provided.
 
-```` Rules:
+Rules:
 - Start with the Technology Stack (section 2) — everything else depends on this
 - Include all modules/components with their responsibilities on one line each
 - If the system has multiple roles, complete the "Roles and Permissions" section
 - In "Contracts and Public Interfaces," include at least the critical endpoints or commands with their expected response
 - Include the repository structure as a folder tree
-- If there is a non-obvious decision (e.g., why that framework, that database), mark it as a candidate for ADR (Analysis, Diligence, and Reduction)
+- If there is a non-obvious decision (e.g., why that framework, that database), generate its ADR inline right after architecture.md
 - If information is missing to make a decision, write it in "Open Assumptions" instead of guessing
 
 [paste concept.md here]
-`````
+
+---
+ADR template:
+[paste adr_mold.md here]
+```
+
+---
+
+## Prompt: design.md
+
+**What you need before using this prompt:**
+
+- A complete `architecture.md` file (especially the architectural style and technology stack)
+
+```
+From this architecture.md file, generate a design.md file using the provided template.
+
+Rules:
+- Section 1 (Layer/Folder Convention) must be consistent with the architectural style in architecture.md
+- Each module in Section 2 must have a one-line responsibility AND a "does NOT handle" boundary
+- Include at least the happy-path flow in Section 4
+- Contracts in Section 6 must be executable as written — no vague placeholders
+- The repository structure in Section 7 must match the folder convention in Section 1
+
+[paste architecture.md here]
+```
 
 ---
 
@@ -77,10 +106,10 @@ Using this concept.md file and the specified stack, generate an architecture.md 
 
 **What you need before using this prompt:**
 
-- A complete `architecture.md` file
+- A complete `design.md` file
 
 ```
-From this architecture.md file, generate a task.md file using the provided template.
+From this design.md file, generate a task.md file using the provided template.
 
 Rules:
 - Each task must be implementable in one work session (1-4 hours)
@@ -120,20 +149,24 @@ Rules:
 
 **What you need before using this prompt:**
 
-- `concept.md`, `architecture.md`, `task.md`, and at least one ADR
+- `concept.md`, `architecture.md`, `design.md`, `task.md`, and at least one ADR
 
-````
+```
 From these documents, generate a README.md for the repository using the provided template.
 
-``` Rules:
+Rules:
 - The initial description must be understandable to someone outside the project.
 - Prerequisites must include minimum versions.
 - "How to Run" commands must be executable as written.
 - List only the ADRs that someone new needs to read to understand the important decisions.
-- Don't repeat architecture.md—link to it.
+- Don't repeat architecture.md or design.md — link to them.
 
-[paste concept.md + architecture.md here]
-````
+[paste concept.md here]
+[paste architecture.md here]
+[paste design.md here]
+[paste task.md here]
+[paste ADRs here]
+```
 
 ---
 
@@ -149,10 +182,17 @@ From these documents, generate a README.md for the repository using the provided
 **architecture.md is not ready if:**
 
 - The technology stack is not defined.
-- The modules don't have clear responsibilities.
-- There are no defined minimum contracts/interfaces.
-- The repository structure is empty.
+- The architectural style (pattern) is not chosen or justified.
 - There are important decisions without a candidate ADR.
+- Open assumptions block the next step.
+
+**design.md is not ready if:**
+
+- Modules don't have clear "does NOT handle" boundaries.
+- The folder convention contradicts the architectural style.
+- Contracts have vague placeholders instead of concrete request/response shapes.
+- The repository structure is empty or inconsistent with the folder convention.
+- There are no defined flows (at minimum the happy path).
 
 **task.md is not It's ready if:**
 
